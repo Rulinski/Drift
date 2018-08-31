@@ -11,6 +11,8 @@ use Curl\Curl as Curl;
 class Drift
 {
     private $contacts_url = 'https://driftapi.com/contacts/';
+    private $users_url = 'https://driftapi.com/users/list/';
+    private $conversations_url = 'https://driftapi.com/conversations/';
     
     public function __construct($config)
     {
@@ -45,5 +47,41 @@ class Drift
         $resp = $this->curlGet($this->contacts_url . $id);
         
         return $resp;
+    }
+    
+    public function getUser($id, $options = [])
+    {
+        $resp = $this->curlGet($this->users_url . $id);
+        
+        return $resp;
+    }
+    
+    public function getAllConversations($options = [])
+    {
+        $resp = $this->curlGet($this->conversations_url);
+        
+        return $resp;
+    }
+    
+    public function getConversation($id, $options = [])
+    {
+        $resp = $this->curlGet($this->conversations_url . $id);
+        
+        return $resp;
+    }
+    
+    public function getConversationMessage($id, $options = [])
+    {
+        $resp = $this->curlGet($this->conversations_url . $id . '/messages');
+        $resp = json_decode($resp);
+        $body = [];
+        foreach ($resp->data->messages as $message) {
+            if ($message->body) {
+                $body[] = strip_tags($message->body);
+            }
+            
+        }
+        
+        return json_encode($body);
     }
 }

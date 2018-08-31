@@ -9,6 +9,18 @@ $drift = new \Drift\Drift($config);
 
 if (isset($_GET['method'])) {
     switch ($_GET['method']) {
+        case 'getAllConversations':
+            $convs = json_decode($drift->getAllConversations());
+            ob_start();
+            include 'templates/get_all_conversations.phtml';
+            echo ob_get_clean();
+            break;
+        case 'getConversation':
+            echo $drift->getConversation($_GET['id']);
+            break;
+        case 'getConversationMessage':
+            echo $drift->getConversationMessage($_GET['id']);
+            break;
         case 'getAllContacts':
             echo $drift->getAllContacts();
             break;

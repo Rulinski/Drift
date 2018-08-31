@@ -1,0 +1,27 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<div class="container">
+    <table class="table table-hover table-bordered">
+        <thead></thead>
+        <tr>
+            <?php
+            foreach ((array)$convs->data[0] as $k => $v) {
+                echo "<th>$k</th>";
+            } ?>
+        </tr>
+        </thead>
+        <tbody>
+        <?php
+        foreach ($convs->data as $conv) {
+            $time = date('d-m-Y H:i:s', ceil($conv->createdAt / 1000));
+            echo '<tr>';
+            echo "<td>{$conv->status}</td>";
+            echo "<td><a target='_blank' href='/?method=getContact&id={$conv->contactId}'>$conv->contactId</a></td>";
+            echo "<td>{$time}</td>";
+            echo "<td><a target='_blank' href='/?method=getConversationMessage&id={$conv->id}'>$conv->id</a></td>";
+            echo "<td>{$conv->inboxId}</td>";
+            echo '</tr>';
+        }
+        ?>
+        </tbody>
+    </table>
+</div>
