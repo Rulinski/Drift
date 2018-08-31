@@ -84,4 +84,47 @@ class Drift
         
         return json_encode($body);
     }
+    
+    /**
+     * @return string
+     * @throws \ErrorException
+     * https://devdocs.drift.com/docs/authentication-and-scopes
+     */
+    private function oauth()
+    {
+        $curl = new Curl();
+        $curl->setOpt(CURLOPT_RETURNTRANSFER, true);
+        $curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
+        $curl->setOpt(CURLOPT_USERAGENT, 'request');
+        $curl->setHeader('Content-Type', 'application/json');
+        $options = [
+            "clientId"     => $this->clientId,
+            "clientSecret" => $this->clientSecret,
+            "code"         => $this->code,
+            'grantType'    => 'authorization_code',
+        ];
+        $curl->post('https://driftapi.com/oauth2/token', json_encode($options));
+        $curl->close();
+        
+        return $curl->response;
+    }
+    
+    private function refreshToken()
+    {
+        $curl = new Curl();
+        $curl->setOpt(CURLOPT_RETURNTRANSFER, true);
+        $curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
+        $curl->setOpt(CURLOPT_USERAGENT, 'request');
+        $curl->setHeader('Content-Type', 'application/json');
+        $options = [
+            "clientId"     => $this->clientId,
+            "clientSecret" => $this->clientSecret,
+            "refreshToken" => $this->refreshToken,
+            'grantType'    => 'refresh_token',
+        ];
+        $curl->post('https://driftapi.com/oauth2/token', json_encode($options));
+        $curl->close();
+        
+        return $curl->response;
+    }
 }
