@@ -58,9 +58,22 @@ class Drift
     
     public function getAllConversations($options = [])
     {
-        $resp = $this->curlGet($this->conversations_url);
+        if (!empty($options)){
+            $request = '?';
+            $request .= implode('&',$options);
+        }
+        
+        $resp = $this->curlGet($this->conversations_url.$request);
         
         return $resp;
+    }
+    
+    public function saveLastConversationId($conversationId){
+        file_put_contents($_SERVER['DOCUMENT_ROOT'].'/config/conversation.json', $conversationId);
+    }
+    
+    public function getLastConversationId(){
+        return file_get_contents($_SERVER['DOCUMENT_ROOT'].'/config/conversation.json');
     }
     
     public function getConversation($id, $options = [])
@@ -79,10 +92,9 @@ class Drift
             if ($message->body) {
                 $body[] = strip_tags($message->body);
             }
-            
         }
         
-        return json_encode($body);
+        return $body;
     }
     
     /**
