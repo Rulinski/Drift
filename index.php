@@ -28,18 +28,54 @@ if (isset($_GET['method'])) {
             echo $drift->getContact($_GET['id']);
             break;
         case 'sentToCrm':
-            $convs = json_decode($drift->getAllConversations(['next='.$drift->getLastConversationId()]));
+//            $convs = json_decode($drift->getAllConversations());
+            $conversation_id = $drift->getLastConversationId();
+            $convs = json_decode($drift->getAllConversations(['next='.$conversation_id]));
+
+            $new_data = array_chunk($convs->data, 10);
+
+            var_dump($new_data[0]);
+//            var_dump($convs);die;
             $items = [];
-            foreach ($convs->data as $conv){
+            foreach ($new_data[0] as $conv){
+                if ($conv->id == $conversation_id) continue;
+                
                 $item = [];
                 $contact = json_decode($drift->getContact($conv->contactId));
-                if ($contact->data->attributes->email){
-                    $item['contact'] = $contact;
-                    $item['conv'] = $drift->getConversationMessage($conv->id);
+//                $drift->saveLastConversationId($conv->id);
+                if ($contact->data->attributes->email && !in_array($contact->data->attributes->_classification,['Bad Lead'])){
+                    $item['conv_id'] = $conv->id;
+                    $item['contact']['email'] = $contact->data->attributes->email;
+                    $item['contact']['first_name'] = $contact->data->attributes->first_name;
+                    $item['contact']['last_name'] = $contact->data->attributes->last_name;
+                    $item['contact']['title'] = $contact->data->attributes->employment_title;
+                    $item['contact']['url_page'] = $contact->data->attributes->recent_entrance_page_url;
+                    $item['contact']['country'] = $contact->data->attributes->display_location;
+                    $item['contact']['lead_source'] = 'Drift Chat';
+                    $item['contact']['lead_source_description'] = $contact->data->attributes->original_entrance_page_title;
+                    $item['contact']['company'] = $contact->data->attributes->employment_name;
+                    $item['contact']['drift_id'] = $contact->data->id;
+                    $item['conv']['message'] = $drift->getConversationMessage($conv->id);
+                    $item['conv']['time'] = date('d-m-Y H:i:s', ceil($conv->createdAt / 1000));
+                    $conversation_id = $conv->id;
                     $items[] = $item;
+                    $drift->saveLastConversationId($conv->id);
                 }
             }
-            var_dump($items);
+    
+//            var_dump($items);
+//            die;
+            $curl = new \Curl\Curl();
+
+            $curl->setOpt(CURLOPT_RETURNTRANSFER, true);
+            $curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
+            $curl->setOpt(CURLOPT_USERAGENT, 'request');
+            //        $curl->setHeader('Content-Type', 'application/json');
+
+            $curl->post('https://crm.altoros.com/vital_api.php?method=driftData', ['data' => $items]);
+            $curl->close();
+
+            var_dump($curl->response);
             break;
     }
 } else {

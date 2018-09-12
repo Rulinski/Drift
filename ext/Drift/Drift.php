@@ -90,7 +90,7 @@ class Drift
         $body = [];
         foreach ($resp->data->messages as $message) {
             if ($message->body) {
-                $body[] = strip_tags($message->body);
+                $body[] = str_replace([';'],'',strip_tags($message->body));
             }
         }
         
