@@ -3,6 +3,7 @@
     <table class="table table-hover table-bordered">
         <thead></thead>
         <tr>
+            <th></th>
             <?php
             foreach ((array)$convs->data[0] as $k => $v) {
                 echo "<th>$k</th>";
@@ -11,9 +12,10 @@
         </thead>
         <tbody>
         <?php
-        foreach ($convs->data as $conv) {
+        foreach ($convs->data as $k => $conv) {
             $time = date('d-m-Y H:i:s', ceil($conv->createdAt / 1000));
             echo '<tr>';
+            echo "<td>{$k}</td>";
             echo "<td>{$conv->status}</td>";
             echo "<td><a target='_blank' href='/?method=getContact&id={$conv->contactId}'>$conv->contactId</a></td>";
             echo "<td>{$time}</td>";

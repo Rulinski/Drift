@@ -4,6 +4,7 @@ require_once 'vendor/autoload.php';
 $config = json_decode(file_get_contents(__DIR__.'/config/drift.json'));
 
 $drift = new \Drift\Drift($config);
+date_default_timezone_set("Europe/Minsk");
 
 if (isset($_GET['method'])) {
     switch ($_GET['method']) {
@@ -25,7 +26,7 @@ if (isset($_GET['method'])) {
         case 'getContact':
             echo $drift->getContact($_GET['id']);
             break;
-        case 'sentToCrm':
+        case 'sendToCrm':
             $drift = $drift->sendConversationsToCRM();
             break;
     }
