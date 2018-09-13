@@ -177,7 +177,8 @@ class Drift
             if ($this->getContactAttr('email') && !in_array($this->getContactAttr('_classification'), ['Bad Lead'])){
                 $item['conv_id'] = $conv->id;
                 $item['contact']['email'] = $this->getContactAttr('email');
-                $item['contact']['first_name'] = ($this->getContactAttr('first_name')) ? $this->getContactAttr('first_name') : 'empty_name';
+                $item['contact']['first_name'] = ($this->getContactAttr('first_name')) ? $this->getContactAttr('first_name') :
+                    ($this->getContactAttr('name')) ? $this->getContactAttr('name') : 'empty_name';
                 $item['contact']['last_name'] = $this->getContactAttr('last_name');
                 $item['contact']['title'] = $this->getContactAttr('employment_title');
                 $item['contact']['url_page'] = $this->getContactAttr('recent_entrance_page_url');

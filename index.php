@@ -8,7 +8,7 @@ $drift = new \Drift\Drift($config);
 if (isset($_GET['method'])) {
     switch ($_GET['method']) {
         case 'getAllConversations':
-            $convs = json_decode($drift->getAllConversations());
+            $convs = json_decode($drift->getAllConversations(['next='.$_GET['next'], 'limit=100']));
             ob_start();
             include 'templates/get_all_conversations.phtml';
             echo ob_get_clean();
